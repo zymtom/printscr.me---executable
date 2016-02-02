@@ -35,7 +35,7 @@ func main() {
 func onReady() {
     systray.SetIcon(icon.Data)
     systray.SetTitle("Awesome App")
-    systray.SetTooltip("Pretty awesome超级棒")
+    systray.SetTooltip("Pretty awesome")
     mQuit := systray.AddMenuItem("Quit", "Quit the whole app")
     go func() {
 		<-mQuit.ClickedCh
@@ -44,13 +44,11 @@ func onReady() {
 	}()
 }
 func makeScreenshot()(file string, err error){
-    
     file = "ss123.png"
     img, err := screenshot.CaptureScreen()
 	if err != nil {
 		return file, err
 	}
-    
 	f, err := os.Create("./"+file)
 	if err != nil {
 		return file, err
@@ -62,7 +60,6 @@ func makeScreenshot()(file string, err error){
 	f.Close()
     return file, nil
 }
-
 func Upload(reqUrl, file string) (response map[string]interface{}, err error) {
     // Prepare a form that you will submit to that URL.
     var b bytes.Buffer

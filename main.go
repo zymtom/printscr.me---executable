@@ -13,15 +13,15 @@ import (
     //"io/ioutil"
     "encoding/json"
     "errors"
-    "os/exec"
-    "runtime"
-    //"github.com/getlantern/systray"
-    //"github.com/getlantern/systray/example/icon"
+    //"os/exec"
+    //"runtime"
+    "github.com/getlantern/systray"
+    "github.com/getlantern/systray/example/icon"
 )
 
 func main() {
-    //systray.Run(onReady)
-    f, e := makeScreenshot()
+    systray.Run(onReady)
+    /*f, e := makeScreenshot()
     if e != nil {
         panic(e)
     }
@@ -47,21 +47,44 @@ func main() {
         if err != nil {
             panic(err)
         }
-    }
+    }*/
     
     
 }
-/*func onReady() {
+func onReady() {
     systray.SetIcon(icon.Data)
     systray.SetTitle("Awesome App")
     systray.SetTooltip("Pretty awesome")
     mQuit := systray.AddMenuItem("Quit", "Quit the whole app")
+    mPrintscreen := systray.AddMenuItem("Printscreen", "make a printscreen")
     go func() {
 		<-mQuit.ClickedCh
 		systray.Quit()
 		fmt.Println("Quit now...")
 	}()
-}*/
+    go func() {
+        <-mPrintscreen.ClickedCh
+        systray.AddMenuItem(uploadAndGetPath(), "Visit your screenshot")
+    }()
+}
+func uploadAndGetPath()(url string){
+    f, e := makeScreenshot()
+    if e != nil {
+        panic(e)
+    }
+    res, err := Upload("http://printscr.me/api.php", "./"+f)
+    if err != nil {
+        panic(err)
+    }
+    if res["upload"] == "failed" {
+        panic(res["reason"])
+    }
+    if str, ok := res["location"].(string); !ok {
+        panic("something went wrong with getting the location")
+    }else{
+        return str
+    }
+}
 func makeScreenshot()(file string, err error){
     file = "ss123.png"
     img, err := screenshot.CaptureScreen()
